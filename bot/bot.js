@@ -32,11 +32,16 @@ const botLogic = async (context) => {
 
     // Verifica se a mensagem é para treinar o modelo
     else if (mensagem.startsWith("train model")) {
+      const trainingData = mensagem.slice(11).trim(); // Captura o que vem após "train model"
+
       try {
-        await treinarModelo(); // Treina o modelo com TensorFlow.js
-        await context.sendActivity("Modelo treinado com sucesso!");
+        await treinarModelo(trainingData);
+        await context.sendActivity("Modelo treinado com os dados fornecidos!");
       } catch (error) {
-        await context.sendActivity("Ocorreu um erro ao treinar o modelo.");
+        console.error("Erro ao treinar o modelo:", error);
+        await context.sendActivity(
+          "Ocorreu um erro ao treinar o modelo. Detalhes: " + error.message
+        );
       }
     }
 

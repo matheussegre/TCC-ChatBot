@@ -1,0 +1,23 @@
+{
+  "name": "tcc---chatbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@huggingface/inference": "^2.8.1",
+    "@huggingface/transformers": "^3.0.0-alpha.20",
+    "@tensorflow/tfjs": "^4.21.0",
+    "@tensorflow/tfjs-node": "^4.21.0",
+    "axios": "^1.7.7",
+    "botbuilder": "^4.23.1",
+    "express": "^4.21.1",
+    "node-fetch": "^3.3.2",
+    "restify": "^11.1.0"
+  }
+}

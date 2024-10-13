@@ -1,10 +1,19 @@
 const tf = require("@tensorflow/tfjs");
 require("@tensorflow/tfjs-node"); // Importa tfjs-node para funcionalidade de arquivos
+const { HfInference } = require("@huggingface/inference");
 
-const MODEL_PATH = "model/tf_model"; // Caminho onde o modelo será salvo
+const hf = new HfInference("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"); // Substitua pela sua chave de API
+const MODEL_PATH = "../model/tf_model"; // Caminho onde o modelo será salvo
+const TOKENIZER_PATH = "tokenizer"; // Caminho onde o tokenizer será salvo
 
 // Função para treinar o modelo de Machine Learning
 async function treinarModelo() {
+  // Verifica se o diretório existe, se não existir, cria
+  const fs = require("fs");
+  if (!fs.existsSync(MODEL_PATH)) {
+    fs.mkdirSync(MODEL_PATH, { recursive: true });
+  }
+
   const model = tf.sequential();
   model.add(
     tf.layers.dense({ units: 10, activation: "relu", inputShape: [20] })
@@ -17,6 +26,7 @@ async function treinarModelo() {
     metrics: ["accuracy"],
   });
 
+  // Exemplos de dados para treinamento (substitua por seus próprios dados)
   const xs = tf.tensor2d([
     [0, 1],
     [1, 0],
@@ -34,13 +44,21 @@ async function treinarModelo() {
   return model;
 }
 
-// Função para prever uma solução com base no modelo treinado
+// Função para prever uma solução com base no modelo treinado usando Hugging Face
 async function preverSolucao(entidade) {
-  const model = await tf.loadLayersModel(`file://${MODEL_PATH}/model.json`); // Carrega o modelo salvo
+  try {
+    // Faz a inferência usando o modelo GPT-2
+    const response = await hf.textGeneration({
+      model: "pierreguillou/gpt2-small-portuguese", // Modelo que você deseja usar
+      inputs: entidade,
+    });
 
-  // Aqui você colocaria a lógica para passar a entidade para o modelo e gerar a previsão
-  // Este é um exemplo simplificado
-  return `Solução para o problema ${entidade}: verifique a sintaxe na linha X.`;
+    // Retorna a resposta gerada
+    return response.generated_text;
+  } catch (error) {
+    console.error("Erro ao prever solução:", error);
+    throw new Error("Falha na previsão da solução.");
+  }
 }
 
-module.exports = { treinarModelo, preverSolucao };
+module.exports = { treinarModelo, preverSolucao }; // Exporta as funções para serem usadas no bot

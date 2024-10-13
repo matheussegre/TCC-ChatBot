@@ -40,25 +40,17 @@ const botLogic = async (context) => {
       }
     }
 
-    // Se não for sobre GitHub ou treinar modelo, processa o NLP e usa o modelo de ML
+    // Processa a mensagem com o NLP e prevê uma solução
     else {
       try {
         // Passo 1: Processa a mensagem com o NLP
         const nlpResult = await processarNLP(mensagem);
 
-        // Passo 2: Verifica a intenção com o NLP
-        if (nlpResult.intencao === "erro_codigo") {
-          // Passo 3: Usa o Machine Learning para prever uma solução com base na intenção detectada
-          const sugestaoML = await preverSolucao(nlpResult.entidade);
+        // Passo 2: Gera uma previsão usando o modelo de ML
+        const sugestaoML = await preverSolucao(nlpResult); // Passa o resultado do NLP para previsão
 
-          // Passo 4: Retorna a sugestão da previsão do modelo
-          await context.sendActivity(`Sugestão para o erro: ${sugestaoML}`);
-        } else {
-          // Caso não seja um erro de código, apenas responde com o resultado do NLP
-          await context.sendActivity(
-            `Entendi que você quis dizer: ${JSON.stringify(nlpResult)}`
-          );
-        }
+        // Passo 3: Retorna a sugestão da previsão do modelo
+        await context.sendActivity(`Sugestão: ${sugestaoML}`);
       } catch (error) {
         await context.sendActivity(
           "Desculpe, não consegui processar sua mensagem."

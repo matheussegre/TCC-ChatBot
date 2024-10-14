@@ -2,8 +2,8 @@ const axios = require("axios");
 
 // Função para processar o NLP usando a API Hugging Face
 const processarNLP = async (input) => {
-  const apiKey = "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"; // Defina a variável de ambiente com a sua chave
-  const model = "pierreguillou/gpt2-small-portuguese"; // Ou o modelo que você quiser usar
+  const apiKey = "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";
+  const model = "pierreguillou/gpt2-small-portuguese";
 
   try {
     const response = await axios.post(

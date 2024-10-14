@@ -1,7 +1,11 @@
 const { BotFrameworkAdapter } = require("botbuilder");
 const { processarNLP } = require("../services/nlpService"); // Serviço de NLP
 const { buscarRepoGitHub } = require("../services/githubService"); // Serviço da API GitHub
-const { treinarModelo, preverSolucao } = require("../services/mlModel"); // Treinamento e previsão de ML
+const {
+  treinarModelo,
+  preverSolucao,
+  adicionarDados,
+} = require("../services/mlModel"); // Treinamento e previsão de ML
 
 // Configuração do adaptador do bot
 const adapter = new BotFrameworkAdapter({
@@ -16,21 +20,19 @@ const botLogic = async (context) => {
 
     // Verifica se a mensagem é para treinar o modelo
     if (mensagem.startsWith("train model")) {
+      const trainingData = JSON.parse(mensagem.slice(11).trim()); // Captura o que vem após "train model"
+
       try {
-        // Formatação dos dados para treinamento
-        const trainingData = mensagem.slice(11).trim(); // Captura o que vem após "train model"
-        const parsedData = JSON.parse(trainingData); // Converte string para array de arrays
+        // Adiciona novos dados ao arquivo JSON
+        trainingData.forEach((item) => {
+          const pergunta = item[0][0];
+          const resposta = item[1][0];
+          adicionarDados(pergunta, resposta); // Adiciona dados
+        });
 
-        // Verifica se o dado foi convertido corretamente
-        if (!Array.isArray(parsedData)) {
-          throw new Error(
-            "Os dados de treinamento precisam ser um array de arrays."
-          );
-        }
-
-        // Chama a função de treinamento com os dados convertidos
-        await treinarModelo(parsedData);
-        await context.sendActivity("Modelo treinado com sucesso!");
+        // Treina o modelo com os dados atualizados
+        await treinarModelo(carregarDados());
+        await context.sendActivity("Modelo treinado com os dados fornecidos!");
       } catch (error) {
         console.error("Erro ao treinar o modelo:", error);
         await context.sendActivity(
